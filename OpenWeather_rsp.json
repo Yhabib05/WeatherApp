@@ -1,0 +1,15 @@
+{
+    "coord": {
+        "lon": 2.2335,
+        "lat": 48.7189
+    },
+    "main": {
+        "temp": 286.01,
+        "feels_like": 285.18,
+        "temp_min": 284.81,
+        "temp_max": 286.99,
+        "pressure": 1013,
+        "humidity": 70
+    },
+    "name": "Arrondissement de Palaiseau"
+}
