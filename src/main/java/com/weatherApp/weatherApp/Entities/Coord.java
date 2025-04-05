@@ -27,6 +27,12 @@ public class Coord {
 
     @JsonProperty("lon")
     private Double lon;
+
+    public Coord(Double lat, Double lon) {
+        this.lat = lat;
+        this.lon = lon;
+    }
+
     @JsonProperty("lat")
     private Double lat;
 
