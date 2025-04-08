@@ -1,6 +1,5 @@
 package com.weatherApp.weatherApp.Controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weatherApp.weatherApp.Entities.Coord;
 import com.weatherApp.weatherApp.Services.CoordinatesService;
 import org.springframework.http.HttpStatus;

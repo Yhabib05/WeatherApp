@@ -3,7 +3,6 @@ package com.weatherApp.weatherApp.Services.Impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weatherApp.weatherApp.Entities.Coord;
-import com.weatherApp.weatherApp.Entities.WeatherInformation;
 import com.weatherApp.weatherApp.Services.CoordinatesService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;

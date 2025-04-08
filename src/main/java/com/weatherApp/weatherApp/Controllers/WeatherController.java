@@ -2,6 +2,7 @@ package com.weatherApp.weatherApp.Controllers;
 import com.weatherApp.weatherApp.Entities.Coord;
 import com.weatherApp.weatherApp.Entities.Main;
 import com.weatherApp.weatherApp.Entities.WeatherInformation;
+import com.weatherApp.weatherApp.Services.CoordinatesService;
 import com.weatherApp.weatherApp.Services.WeatherService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,9 +13,28 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/weather")
 public class WeatherController {
     private final WeatherService weatherService;
+    private final CoordinatesService coordinatesService;
 
-    public WeatherController(WeatherService weatherService){
+    public WeatherController(WeatherService weatherService, CoordinatesService coordinatesService){
         this.weatherService=weatherService;
+        this.coordinatesService = coordinatesService;
+    }
+
+    @GetMapping("/by-city")
+    public ResponseEntity<?>getWeatherByCity(@RequestParam String city){
+        Coord coord = coordinatesService.getCoordinates(city);
+
+        if(coord==null){
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body("Could not find coordinates for city: " + city);
+        }
+        WeatherInformation data = weatherService.getWeatherInfos(coord.getLat(),coord.getLon());
+
+        if(data==null){
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body("Weather data is currently unavailable.");
+        }
+        return ResponseEntity.ok(data);
     }
 
     @GetMapping

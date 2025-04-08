@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public interface UserService {
     public User createUser(User user);
+    public User changeUserName(User user, String newUsername);
     public void deleteUser(UUID id);
     public User getUserById(UUID id);
     public List<User> getAllUsers();

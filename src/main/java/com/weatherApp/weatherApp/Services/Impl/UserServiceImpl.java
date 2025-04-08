@@ -37,6 +37,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User changeUserName(User user, String newUsername){
+        user.setUsername(newUsername);
+        if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
+            throw new IllegalArgumentException("Username mustn't be empty");
+        }
+        if(userRepository.findByUsername(user.getUsername())!=null){
+            throw new IllegalArgumentException("Username already exists");
+        }
+        return userRepository.save(user);
+
+    }
+
+    @Override
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
     }

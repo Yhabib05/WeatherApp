@@ -23,11 +23,20 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody User user){
         return ResponseEntity.ok(userService.createUser(user));
     }
+
+    @PutMapping
+    public ResponseEntity<?> updateUser(@RequestParam UUID id ,@RequestBody String newUsername){
+        User user= userService.getUserById(id);
+        return ResponseEntity.ok(userService.changeUserName(user,newUsername ));
+    }
+
+
     @DeleteMapping
     public ResponseEntity<?> deleteUser(@RequestParam UUID id){
         userService.deleteUser(id);
         return ResponseEntity.ok("User deleted successfully");
     }
+
 
     @GetMapping
     public ResponseEntity<?> getAllUser(){
