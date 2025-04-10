@@ -1,75 +1,73 @@
 package com.weatherApp.weatherApp.Controllers;
 
+import com.weatherApp.weatherApp.Dto.UpdateUsernameRequest;
 import com.weatherApp.weatherApp.Entities.Coord;
 import com.weatherApp.weatherApp.Entities.User;
 import com.weatherApp.weatherApp.Services.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
-
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-
-    @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody User user){
-        return ResponseEntity.ok(userService.createUser(user));
-    }
-
-    @PutMapping
-    public ResponseEntity<?> updateUser(@RequestParam UUID id ,@RequestBody String newUsername){
-        User user= userService.getUserById(id);
-        return ResponseEntity.ok(userService.changeUserName(user,newUsername ));
-    }
-
-
-    @DeleteMapping
-    public ResponseEntity<?> deleteUser(@RequestParam UUID id){
-        userService.deleteUser(id);
-        return ResponseEntity.ok("User deleted successfully");
-    }
-
-
+    /* --------------- Users controllers ----------------- */
     @GetMapping
-    public ResponseEntity<?> getAllUser(){
+    public ResponseEntity<List<User>> getAllUsers(){
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @PostMapping("favorite")
-    public ResponseEntity<?> addToFavorite(@RequestBody Coord coord, @RequestParam UUID userId){
-        try{
-            User user= userService.getUserById(userId);
-            userService.addToFavorite(coord, user);
-            return ResponseEntity.ok("City added to favorite");
-        }catch(IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @GetMapping("/{userId}")
+    public ResponseEntity<User> getUserById(@PathVariable UUID userId) {
+        return ResponseEntity.ok(userService.getUserById(userId));
     }
-    @DeleteMapping("favorite")
-    public ResponseEntity<?> removeFromFavorite(@RequestBody Coord coord, @RequestParam UUID userId){
-        try {
-            User user = userService.getUserById(userId);
-            userService.removeFromFavorite(coord, user);
-            return ResponseEntity.ok("City removed from favorite");
-        } catch(IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+
+    @PostMapping
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user){
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
     }
-    @GetMapping("favorite")
-    public ResponseEntity<?> getFavorite(@RequestParam UUID userId){
-        try {
-            User user = userService.getUserById(userId);
-            return ResponseEntity.ok(userService.getFavorite(userId));
-        } catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+
+    @GetMapping("/search/{username}")
+    public ResponseEntity<User> searchUserByUsername(@PathVariable String username){
+        return ResponseEntity.ok(userService.getUserByUsername(username));
+    }
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<User> updateUser(@PathVariable UUID userId ,@RequestBody UpdateUsernameRequest request){
+        return ResponseEntity.ok(userService.changeUserName(userId,request.getNewUsername() ));
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable UUID userId){
+        userService.deleteUser(userId);
+        return ResponseEntity.noContent().build(); // 204 No Content
+    }
+
+    /* --------------- Favorite controllers ----------------- */
+    @PostMapping("/{userId}/favorite")
+    public ResponseEntity<String> addToFavorite(@RequestBody Coord coord, @PathVariable UUID userId){
+        userService.addToFavorite(coord, userId);
+        return ResponseEntity.ok("City added to favorite");
+    }
+
+    @DeleteMapping("/{userId}/favorite")
+    public ResponseEntity<?> removeFromFavorite(@RequestBody Coord coord, @PathVariable UUID userId){
+        userService.removeFromFavorite(coord, userId);
+        return ResponseEntity.ok("City removed from favorite");
+    }
+
+    @GetMapping("/{userId}/favorite")
+    public ResponseEntity<?> getFavorite(@PathVariable UUID userId){
+        return ResponseEntity.ok(userService.getFavorite(userId));
     }
 }

@@ -2,6 +2,9 @@ package com.weatherApp.weatherApp.Services.Impl;
 
 import com.weatherApp.weatherApp.Entities.Coord;
 import com.weatherApp.weatherApp.Entities.User;
+import com.weatherApp.weatherApp.Exceptions.InvalidUserInputException;
+import com.weatherApp.weatherApp.Exceptions.UserNotFoundException;
+import com.weatherApp.weatherApp.Exceptions.UsernameAlreadyExistsException;
 import com.weatherApp.weatherApp.Repositories.UserRepository;
 import com.weatherApp.weatherApp.Services.UserService;
 import org.springframework.stereotype.Service;
@@ -20,13 +23,13 @@ public class UserServiceImpl implements UserService {
 
     private void validateNewUser(User user){
         if(null!=user.getId()){
-            throw new IllegalArgumentException("ID should not be provided; it is generated automatically.");
+            throw new InvalidUserInputException("ID should not be provided; it is generated automatically.");
         }
         if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-            throw new IllegalArgumentException("Username mustn't be empty");
+            throw new InvalidUserInputException("Username mustn't be empty");
         }
         if(userRepository.findByUsername(user.getUsername())!=null){
-            throw new IllegalArgumentException("Username already exists");
+            throw new UsernameAlreadyExistsException("Username already exists");
         }
 
     }
@@ -37,13 +40,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User changeUserName(User user, String newUsername){
+    public User changeUserName(UUID userId, String newUsername){
+        User user = getUserById(userId);
         user.setUsername(newUsername);
         if (user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-            throw new IllegalArgumentException("Username mustn't be empty");
+            throw new InvalidUserInputException("Username mustn't be empty");
         }
         if(userRepository.findByUsername(user.getUsername())!=null){
-            throw new IllegalArgumentException("Username already exists");
+            throw new UsernameAlreadyExistsException("Username already exists");
         }
         return userRepository.save(user);
 
@@ -57,7 +61,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(UUID id) {
         return userRepository.findById(id)
-                .orElseThrow(()->new IllegalArgumentException("User not found with id" + id));
+                .orElseThrow(()->new UserNotFoundException("User not found with id" + id));
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 
     @Override
@@ -67,20 +76,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Coord getFavorite(UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(()->new IllegalArgumentException("User not found with id" + userId));
+        User user = getUserById(userId);
         return user.getFavoriteCoord();
     }
 
-
     @Override
-    public void addToFavorite(Coord coord, User user) {
+    public void addToFavorite(Coord coord, UUID userId) {
+        User user= getUserById(userId);
         user.setFavoriteCoord(coord);
         userRepository.save(user); //never forget to persist the changes
     }
 
     @Override
-    public void removeFromFavorite(Coord coord, User user) {
+    public void removeFromFavorite(Coord coord, UUID userId) {
+        User user = getUserById(userId);
         user.setFavoriteCoord(null);
         userRepository.save(user);
     }
