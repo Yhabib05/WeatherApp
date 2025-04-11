@@ -17,8 +17,8 @@ public class CoordinatesController {
         this.coordinatesService = coordinatesService;
     }
 
-    @GetMapping
-    public ResponseEntity<Coord> getCoordinates(@RequestParam String city){
+    @GetMapping("/{city}")
+    public ResponseEntity<Coord> getCoordinates(@PathVariable String city){
         Coord data = coordinatesService.getCoordinates(city);
         if (data == null) {
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build(); // 503 with empty body

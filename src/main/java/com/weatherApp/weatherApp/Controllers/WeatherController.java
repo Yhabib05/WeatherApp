@@ -19,14 +19,15 @@ public class WeatherController {
         this.coordinatesService = coordinatesService;
     }
 
-    @GetMapping("/by-city")
-    public ResponseEntity<?>getWeatherByCity(@RequestParam String city){
+    /*
+    @GetMapping("/by-city/{city}")
+    public ResponseEntity<?>getWeatherByCity(@PathVariable String city){
         Coord coord = coordinatesService.getCoordinates(city);
         WeatherInformation data = weatherService.getWeatherInfos(coord.getLat(),coord.getLon());
         return ResponseEntity.ok(data);
     }
-
-    @GetMapping
+*/
+    @PostMapping
     public ResponseEntity<?>getWeatherInfos(@RequestBody Coord coord){
         WeatherInformation data = weatherService.getWeatherInfos(coord.getLat(),coord.getLon());
         //return new ResponseEntity<>(data, HttpStatus.OK);
@@ -34,28 +35,28 @@ public class WeatherController {
         //return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
-    @GetMapping(value ="/main")
+    @PostMapping(value ="/main")
     public ResponseEntity<?> getMain(@RequestBody Coord coord) {
         Main main = weatherService.getMain(coord.getLat(),coord.getLon());
         return ResponseEntity.ok(main);
     }
 
-    @GetMapping(value="/coordinates")
+    @PostMapping(value="/coordinates")
     public ResponseEntity<?> getCoordinates(@RequestBody Coord coord) {
         Coord coordinates = weatherService.getCoordinates(coord.getLat(),coord.getLon());
         //jackson take care of the serialization here
         return ResponseEntity.ok(coordinates);
     }
 
-    @GetMapping(value="/temperature")
+    @PostMapping(value="/temperature")
     public ResponseEntity<?> getTemperature(@RequestBody Coord coord){
         Double temperature = weatherService.getTemperature(coord.getLat(),coord.getLon());
-        return ResponseEntity.ok("temperature: " + temperature);
+        return ResponseEntity.ok( temperature);
     }
 
-    @GetMapping(value="/name")
+    @PostMapping(value="/name")
     public ResponseEntity<?> getName(@RequestBody Coord coord){
         String name = weatherService.getName(coord.getLat(),coord.getLon());
-        return ResponseEntity.ok("Name: "  + name);
+        return ResponseEntity.ok(name);
     }
 }
